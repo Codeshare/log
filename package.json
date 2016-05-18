@@ -1,0 +1,19 @@
+{
+  "name": "codeshare-log",
+  "version": "0.0.0",
+  "description": "codeshare logger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Codeshare/log.git"
+  },
+  "author": "Tejesh Mehta",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Codeshare/log/issues"
+  },
+  "homepage": "https://github.com/Codeshare/log"
+}

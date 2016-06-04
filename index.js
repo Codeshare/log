@@ -6,10 +6,12 @@ require('assert-env')([
 ])
 
 const bunyan = require('bunyan')
-const isObject = require('101/is-object')
-const put = require('101/put')
-const toArray = require('to-array')
 const _errToJSON = require('error-to-json')
+const isObject = require('101/is-object')
+const pick = require('101/pick')
+const put = require('101/put')
+const reqToJSON = require('request-to-json')
+const toArray = require('to-array')
 
 function hidePassword (obj) {
   if (obj.password) {
@@ -42,12 +44,16 @@ module.exports = bunyan.createLogger({
   name: process.env.APP_NAME,
   level: process.env.APP_LOG_LEVEL,
   serializers: {
-    err: errToJSON,
     args: (args) => toArray(args).map(function (arg) {
       return isObject(arg)
         ? hidePassword(arg)
         : arg
-    })
+    }),
+    ctx: (ctx) => ctx.url
+      ? pick(ctx, ['method', 'url', 'body', 'headers'])
+      : ctx,
+    err: errToJSON,
+    req: reqToJSON
   },
   streams: [
     {

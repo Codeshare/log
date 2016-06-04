@@ -21,6 +21,7 @@
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.1",
     "error-to-json": "^1.0.0",
+    "request-to-json": "^1.0.0",
     "to-array": "^0.1.4"
   }
 }

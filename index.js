@@ -11,6 +11,7 @@ const isObject = require('101/is-object')
 const pick = require('101/pick')
 const put = require('101/put')
 const reqToJSON = require('request-to-json')
+const shimmer = require('shimmer')
 const toArray = require('to-array')
 
 function hidePassword (obj) {
@@ -40,7 +41,7 @@ function errToJSON (err) {
 // "debug" (20): Anything else, i.e. too verbose to be included in "info" level.
 // "trace" (10): Logging from external libraries used by your app or very detailed application logging.
 
-module.exports = bunyan.createLogger({
+const log = module.exports = bunyan.createLogger({
   name: process.env.APP_NAME,
   level: process.env.APP_LOG_LEVEL,
   serializers: {
@@ -49,16 +50,36 @@ module.exports = bunyan.createLogger({
         ? hidePassword(arg)
         : arg
     }),
-    ctx: (ctx) => ctx.url
-      ? pick(ctx, ['method', 'url', 'body', 'headers'])
-      : ctx,
+    ctx: (ctx) => (ctx && ctx.url)
+      ? pick(ctx, ['method', 'url', 'body', 'headers', 'id', 'token', 'me'])
+      : pick(ctx, ['id', 'token', 'me']),
     err: errToJSON,
     req: reqToJSON
-  },
-  streams: [
-    {
-      stream: process.stderr,
-      level: 'trace'
+  }
+})
+
+const names = [
+  'fatal',
+  'error',
+  'warn',
+  'info',
+  'debug',
+  'trace'
+]
+names.forEach(function (name) {
+  shimmer.wrap(log, name, function (orig) {
+    return function (obj, msg) {
+      let tmp
+      let args
+      if (msg && typeof msg === 'object') {
+        tmp = msg
+        msg = obj
+        obj = tmp
+        args = [obj, msg]
+      } else {
+        args = Array.prototype.slice.call(arguments)
+      }
+      return orig.apply(this, args)
     }
-  ]
+  })
 })

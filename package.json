@@ -20,7 +20,7 @@
     "101": "^1.6.2",
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.1",
-    "bunyan-stackdriver": "^1.2.1"
+    "bunyan-stackdriver": "^1.2.1",
     "error-to-json": "^1.0.0",
     "request-to-json": "^1.0.0",
     "shimmer": "^1.1.0",

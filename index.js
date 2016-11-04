@@ -1,6 +1,6 @@
 'use strict'
 
-require('assert-env')([
+require('@codeshare/env').assert([
   'APP_LOG_LEVEL',
   'APP_NAME'
 ])
@@ -13,6 +13,7 @@ const pick = require('101/pick')
 const put = require('101/put')
 const reqToJSON = require('request-to-json')
 const shimmer = require('shimmer')
+const sentryStream = require('./lib/sentry-stream')
 const toArray = require('to-array')
 
 // "fatal" (60): The service/app is going to stop or become unusable now. An operator should definitely look into this soon.
@@ -32,15 +33,17 @@ const opts = {
     req: reqToJSON
   }
 }
-if (process.env.ENABLE_GCLOUD_LOG) {
-  opts.streams = [
-    {
-      type: "raw", // faster; makes Bunyan send objects instead of stringifying messages
-      stream: new BunyanStackDriver()
-    }
-  ]
+const streams = opts.streams = [{
+  stream: process.stdout,
+  level: bunyan.TRACE
+}]
+if (process.env.SENTRY_DSN) {
+  streams.push(sentryStream)
 }
 const log = module.exports = bunyan.createLogger(opts)
+log.on('error', function (err) {
+  log.error('log error', { err: err })
+})
 
 // allows for args in any order..
 const names = [
@@ -57,14 +60,19 @@ names.forEach(function (name) {
       let tmp
       let args
       if (msg && typeof msg === 'object') {
+        // args are reversed.. swap them
         tmp = msg
         msg = obj
         obj = tmp
         args = [obj, msg]
-      } else {
-        args = Array.prototype.slice.call(arguments)
       }
-      return orig.apply(this, args)
+      // default log values
+      Object.assign(obj, {
+        env: process.env.NODE_ENV,
+        commit: process.env.APP_GIT_COMMIT,
+        version: process.env.APP_VERSION
+      })
+      return orig.call(this, obj, msg)
     }
   })
 })

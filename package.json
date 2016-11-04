@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Codeshare/log",
   "dependencies": {
     "101": "^1.6.2",
-    "@codeshare/env": "github:codeshare/env#v1.0.0",
+    "@codeshare/env": "github:codeshare/env#v1.0.1",
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.1",
     "bunyan-stackdriver": "^1.2.1",

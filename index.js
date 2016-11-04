@@ -2,7 +2,8 @@
 
 require('@codeshare/env').assert([
   'APP_LOG_LEVEL',
-  'APP_NAME'
+  'APP_NAME',
+  'SENTRY_DSN'
 ])
 
 const bunyan = require('bunyan')
@@ -12,7 +13,6 @@ const pick = require('101/pick')
 const put = require('101/put')
 const reqToJSON = require('request-to-json')
 const shimmer = require('shimmer')
-const sentryStream = require('./lib/sentry-stream')
 const toArray = require('to-array')
 
 // "fatal" (60): The service/app is going to stop or become unusable now. An operator should definitely look into this soon.
@@ -36,7 +36,8 @@ const streams = opts.streams = [{
   level: process.env.APP_LOG_LEVEL
 }]
 if (process.env.SENTRY_DSN) {
-  streams.push(sentryStream)
+  // note: require must be runtime, bc this file requires env vars
+  streams.push(require('./lib/sentry-stream'))
 }
 const log = module.exports = bunyan.createLogger(opts)
 log.on('error', function (err) {

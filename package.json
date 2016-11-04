@@ -21,7 +21,6 @@
     "@codeshare/env": "github:codeshare/env#v1.0.1",
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.1",
-    "bunyan-stackdriver": "^1.2.1",
     "error-to-json": "^1.0.0",
     "raven": "^0.12.1",
     "request-to-json": "^1.0.0",

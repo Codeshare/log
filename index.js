@@ -6,7 +6,6 @@ require('@codeshare/env').assert([
 ])
 
 const bunyan = require('bunyan')
-const BunyanStackDriver = require('bunyan-stackdriver')
 const errToJSON = require('error-to-json')
 const isObject = require('101/is-object')
 const pick = require('101/pick')

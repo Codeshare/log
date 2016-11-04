@@ -22,6 +22,7 @@
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.1",
     "error-to-json": "^1.0.0",
+    "keypather": "^2.0.1",
     "raven": "^0.12.1",
     "request-to-json": "^1.0.0",
     "shimmer": "^1.1.0",

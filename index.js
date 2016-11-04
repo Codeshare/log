@@ -24,7 +24,6 @@ const toArray = require('to-array')
 // "trace" (10): Logging from external libraries used by your app or very detailed application logging.
 const opts = {
   name: process.env.APP_NAME,
-  level: process.env.APP_LOG_LEVEL,
   serializers: {
     ctx: (ctx) => (ctx && ctx.url)
       ? pick(ctx, ['method', 'url', 'body', 'headers', 'id', 'token', 'me'])
@@ -35,7 +34,7 @@ const opts = {
 }
 const streams = opts.streams = [{
   stream: process.stdout,
-  level: bunyan.TRACE
+  level: process.env.APP_LOG_LEVEL
 }]
 if (process.env.SENTRY_DSN) {
   streams.push(sentryStream)
@@ -64,7 +63,6 @@ names.forEach(function (name) {
         tmp = msg
         msg = obj
         obj = tmp
-        args = [obj, msg]
       }
       // default log values
       Object.assign(obj, {

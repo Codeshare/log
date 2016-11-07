@@ -24,7 +24,7 @@
     "error-to-json": "^1.0.0",
     "keypather": "^2.0.1",
     "raven": "^0.12.1",
-    "request-to-json": "^1.0.0",
+    "request-to-json": "^1.1.0",
     "shimmer": "^1.1.0",
     "through2": "^2.0.1",
     "to-array": "^0.1.4"

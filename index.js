@@ -3,6 +3,7 @@
 require('@codeshare/env').assert([
   'APP_LOG_LEVEL',
   'APP_NAME',
+  'ENABLE_GCLOUD_ERROR',
   'SENTRY_DSN'
 ])
 
@@ -13,6 +14,7 @@ const pick = require('101/pick')
 const put = require('101/put')
 const reqToJSON = require('request-to-json')
 const shimmer = require('shimmer')
+const sparkToJSON = require('spark-to-json')
 const toArray = require('to-array')
 
 // "fatal" (60): The service/app is going to stop or become unusable now. An operator should definitely look into this soon.
@@ -28,13 +30,18 @@ const opts = {
       ? pick(ctx, ['method', 'url', 'body', 'headers', 'id', 'token', 'me'])
       : pick(ctx, ['id', 'token', 'me']),
     err: errToJSON,
-    req: reqToJSON
+    req: reqToJSON,
+    spark: sparkToJSON
   }
 }
 const streams = opts.streams = [{
   stream: process.stdout,
   level: process.env.APP_LOG_LEVEL
 }]
+if (process.env.ENABLE_GCLOUD_ERROR) {
+  // note: require must be runtime, bc this file requires env vars
+  streams.push(require('./lib/gcloud-stream'))
+}
 if (process.env.SENTRY_DSN) {
   // note: require must be runtime, bc this file requires env vars
   streams.push(require('./lib/sentry-stream'))

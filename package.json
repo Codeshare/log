@@ -19,6 +19,7 @@
   "dependencies": {
     "101": "^1.6.2",
     "@codeshare/env": "github:codeshare/env#v1.0.1",
+    "@google/cloud-errors": "github:tjmehta/cloud-errors-nodejs#manual-report-user",
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.1",
     "error-to-json": "^1.0.0",
@@ -26,6 +27,7 @@
     "raven": "^0.12.1",
     "request-to-json": "^1.1.0",
     "shimmer": "^1.1.0",
+    "spark-to-json": "^1.0.1",
     "through2": "^2.0.1",
     "to-array": "^0.1.4"
   }

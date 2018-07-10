@@ -34,10 +34,13 @@ const opts = {
     spark: sparkToJSON
   }
 }
-const streams = opts.streams = [{
-  stream: process.stdout,
-  level: process.env.APP_LOG_LEVEL
-}]
+const streams = opts.streams = []
+if (process.env.APP_LOG_LEVEL) {
+  streams.push({
+    stream: process.stdout,
+    level: process.env.APP_LOG_LEVEL
+  })
+}
 if (process.env.ENABLE_GCLOUD_ERROR) {
   // note: require must be runtime, bc this file requires env vars
   streams.push(require('./lib/gcloud-stream'))
@@ -48,7 +51,8 @@ if (process.env.SENTRY_DSN) {
 }
 const log = module.exports = bunyan.createLogger(opts)
 log.on('error', function (err) {
-  log.error('log error', { err: err })
+  console.error('log error!')
+  console.error(err)
 })
 
 // allows for args in any order..

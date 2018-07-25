@@ -19,9 +19,10 @@
   "dependencies": {
     "101": "^1.6.3",
     "@codeshare/env": "github:codeshare/env#v1.0.1",
-    "@google/cloud-errors": "github:tjmehta/cloud-errors-nodejs#manual-report-user",
+    "@google-cloud/logging-bunyan": "^0.8.2",
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.12",
+    "codeshare-error": "github:codeshare/error",
     "error-to-json": "^1.1.0",
     "keypather": "^2.0.1",
     "raven": "^1.1.1",,

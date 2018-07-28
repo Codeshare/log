@@ -40,9 +40,9 @@ const log = module.exports = bunyan.createLogger({
   },
   streams: process.env.ENABLE_GCLOUD_LOG
     // log to google-cloud
-    ? [{
+    ? [
       new LoggingBunyan().stream()
-    }]
+    ]
     // log to stdout
     : [{
       stream: process.stdout

@@ -24,7 +24,7 @@
     "bunyan": "^1.8.12",
     "error-to-json": "^1.1.0",
     "keypather": "^2.0.1",
-    "raven": "^0.12.1",
+    "raven": "^1.1.1",,
     "request-to-json": "^1.1.1",
     "shimmer": "^1.2.0",
     "spark-to-json": "^1.0.2",

@@ -3,20 +3,17 @@
 require('@codeshare/env').assert([
   'APP_LOG_LEVEL',
   'APP_NAME',
-  'ENABLE_GCLOUD_LOG',
+  'ENABLE_GCLOUD_LOG'
 ])
 
 const AppError = require('codeshare-error')
 const bunyan = require('bunyan')
 const errToJSON = require('error-to-json')
-const isObject = require('101/is-object')
-const { LoggingBunyan } = require('@google-cloud/logging-bunyan');
+const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
 const pick = require('101/pick')
-const put = require('101/put')
 const reqToJSON = require('request-to-json')
 const shimmer = require('shimmer')
 const sparkToJSON = require('spark-to-json')
-const toArray = require('to-array')
 
 // "fatal" (60): The service/app is going to stop or become unusable now. An operator should definitely look into this soon.
 // "error" (50): Fatal for a particular request, but the service/app continues servicing other requests. An operator should look at this soon(ish).
@@ -66,7 +63,6 @@ names.forEach(function (name) {
     return function (obj, msg) {
       // allows for args in any order..
       let tmp
-      let args
       if (msg && typeof msg === 'object') {
         // args are reversed.. swap them
         tmp = msg
@@ -90,13 +86,14 @@ names.forEach(function (name) {
       }
       // stackdriver http request logging
       if (obj.req) {
+        const req = obj.req
         const headers = req.headers || {}
         const connection = req.connection || {}
         const socket = req.socket || connection.socket || {}
         const remoteIp =
           headers['x-forwarded-for'] ||
           connection.remoteAddress ||
-          socket.remoteAddress;
+          socket.remoteAddress
         obj.httpRequest = {
           requestMethod: req.method,
           requestUrl: req.url,
@@ -112,7 +109,7 @@ names.forEach(function (name) {
           // cacheHit: bool,
           // cacheValidatedWithOriginServer: bool,
           // cacheFillBytes: int64,
-          protocol: "HTTP/1.1",
+          protocol: 'HTTP/1.1'
         }
       }
       return orig.call(this, obj, msg)

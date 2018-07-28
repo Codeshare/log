@@ -3,13 +3,14 @@
 require('@codeshare/env').assert([
   'APP_LOG_LEVEL',
   'APP_NAME',
-  'ENABLE_GCLOUD_ERROR',
-  'SENTRY_DSN'
+  'ENABLE_GCLOUD_LOG',
 ])
 
+const AppError = require('codeshare-error')
 const bunyan = require('bunyan')
 const errToJSON = require('error-to-json')
 const isObject = require('101/is-object')
+const { LoggingBunyan } = require('@google-cloud/logging-bunyan');
 const pick = require('101/pick')
 const put = require('101/put')
 const reqToJSON = require('request-to-json')
@@ -23,39 +24,35 @@ const toArray = require('to-array')
 // "info"  (30): Detail on regular operation.
 // "debug" (20): Anything else, i.e. too verbose to be included in "info" level.
 // "trace" (10): Logging from external libraries used by your app or very detailed application logging.
-const opts = {
+const LOG_LEVEL = process.env.APP_LOG_LEVEL || 'fatal'
+// hardcode for now..
+const TRACE_CONTEXT_HEADER_NAME = 'x-cloud-trace-context'
+
+const log = module.exports = bunyan.createLogger({
   name: process.env.APP_NAME,
+  level: LOG_LEVEL,
   serializers: {
-    ctx: (ctx) => (ctx && ctx.url)
-      ? pick(ctx, ['method', 'url', 'body', 'headers', 'id', 'token', 'me'])
-      : pick(ctx, ['id', 'token', 'me']),
+    ctx: pick(['token', 'me', 'session.token', 'session.user']),
     err: errToJSON,
     req: reqToJSON,
+    proxyReq: reqToJSON,
     spark: sparkToJSON
-  }
-}
-const streams = opts.streams = []
-if (process.env.APP_LOG_LEVEL) {
-  streams.push({
-    stream: process.stdout,
-    level: process.env.APP_LOG_LEVEL
-  })
-}
-if (process.env.ENABLE_GCLOUD_ERROR) {
-  // note: require must be runtime, bc this file requires env vars
-  streams.push(require('./lib/gcloud-stream'))
-}
-if (process.env.SENTRY_DSN) {
-  // note: require must be runtime, bc this file requires env vars
-  streams.push(require('./lib/sentry-stream'))
-}
-const log = module.exports = bunyan.createLogger(opts)
-log.on('error', function (err) {
-  console.error('log error!')
-  console.error(err)
+  },
+  streams: process.env.ENABLE_GCLOUD_LOG
+    // log to google-cloud
+    ? [{
+      stream: new LoggingBunyan().stream()
+    }]
+    // log to stdout
+    : [{
+      stream: process.stdout
+    }]
 })
 
-// allows for args in any order..
+log.on('error', function (err) {
+  console.error(new AppError(500, 'LOG ERROR!', err))
+})
+
 const names = [
   'fatal',
   'error',
@@ -67,6 +64,7 @@ const names = [
 names.forEach(function (name) {
   shimmer.wrap(log, name, function (orig) {
     return function (obj, msg) {
+      // allows for args in any order..
       let tmp
       let args
       if (msg && typeof msg === 'object') {
@@ -81,6 +79,42 @@ names.forEach(function (name) {
         commit: process.env.APP_GIT_COMMIT,
         version: process.env.APP_VERSION
       })
+      // pick req off ctx if it exists
+      if (obj.ctx && obj.ctx.req && !obj.req) {
+        obj.req = obj.ctx.req
+      }
+      // pick trace key off of header
+      const traceKey = obj.req && obj.req.headers && obj.req.headers[TRACE_CONTEXT_HEADER_NAME]
+      if (traceKey) {
+        obj[LoggingBunyan.LOGGING_TRACE_KEY] = traceKey
+      }
+      // stackdriver http request logging
+      if (obj.req) {
+        const headers = req.headers || {}
+        const connection = req.connection || {}
+        const socket = req.socket || connection.socket || {}
+        const remoteIp =
+          headers['x-forwarded-for'] ||
+          connection.remoteAddress ||
+          socket.remoteAddress;
+        obj.httpRequest = {
+          requestMethod: req.method,
+          requestUrl: req.url,
+          // requestSize: int64,
+          status: req.statusCode,
+          // responseSize: int64,
+          remoteIp: remoteIp,
+          serverIp: socket.localAddress,
+          referer: headers['referer'],
+          userAgent: headers['user-agent'],
+          // latency: Duration,
+          // cacheLookup: bool,
+          // cacheHit: bool,
+          // cacheValidatedWithOriginServer: bool,
+          // cacheFillBytes: int64,
+          protocol: "HTTP/1.1",
+        }
+      }
       return orig.call(this, obj, msg)
     }
   })

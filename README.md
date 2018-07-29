@@ -12,3 +12,7 @@ log.info('message', {/*...*/})
 log.debug('message', {/*...*/})
 log.trace('message', {/*...*/})
 ```
+
+```js
+log.logRequest({/*...*/})
+```

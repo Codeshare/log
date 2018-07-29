@@ -86,35 +86,49 @@ names.forEach(function (name) {
       if (traceKey) {
         obj[LoggingBunyan.LOGGING_TRACE_KEY] = traceKey
       }
-      // stackdriver http request logging
-      if (obj.req) {
-        const req = obj.req
-        const headers = req.headers || {}
-        const connection = req.connection || {}
-        const socket = req.socket || connection.socket || {}
-        const remoteIp =
-          headers['x-forwarded-for'] ||
-          connection.remoteAddress ||
-          socket.remoteAddress
-        obj.httpRequest = {
-          requestMethod: req.method,
-          requestUrl: req.url,
-          // requestSize: int64,
-          status: req.statusCode,
-          // responseSize: int64,
-          remoteIp: remoteIp,
-          serverIp: socket.localAddress,
-          referer: headers['referer'],
-          userAgent: headers['user-agent'],
-          // latency: Duration,
-          // cacheLookup: bool,
-          // cacheHit: bool,
-          // cacheValidatedWithOriginServer: bool,
-          // cacheFillBytes: int64,
-          protocol: 'HTTP/1.1'
-        }
-      }
       return orig.call(this, obj, msg)
     }
   })
 })
+
+log.logReq = log.logRequest = function (obj) {
+  obj = obj || {}
+  // pick req off ctx if it exists
+  if (obj.ctx && obj.ctx.req && !obj.req) {
+    obj.req = obj.ctx.req
+  }
+  // stackdriver http request logging
+  if (obj.req) {
+    const ctx = obj.ctx || {}
+    const req = obj.req
+    const res = ctx.res || {}
+    const headers = req.headers || {}
+    const connection = req.connection || {}
+    const socket = req.socket || connection.socket || {}
+    const remoteIp =
+      headers['x-forwarded-for'] ||
+      connection.remoteAddress ||
+      socket.remoteAddress
+    const httpRequest = {
+      requestMethod: req.method || ctx.method,
+      requestUrl: req.url || ctx.url,
+      // requestSize: int64,
+      status: res.statusCode || ctx.status,
+      // responseSize: int64,
+      remoteIp: remoteIp,
+      serverIp: socket.localAddress,
+      referer: headers['referer'],
+      userAgent: headers['user-agent'],
+      // latency: Duration,
+      // cacheLookup: bool,
+      // cacheHit: bool,
+      // cacheValidatedWithOriginServer: bool,
+      // cacheFillBytes: int64,
+      protocol: 'HTTP/1.1'
+    }
+    obj.httpRequest = obj.httpRequest
+      ? Object.assign(httpRequest, obj.httpRequest)
+      : httpRequest
+  }
+  log.info('http request', obj)
+}

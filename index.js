@@ -97,7 +97,7 @@ names.forEach(function (name) {
   })
 })
 
-log.logReq = log.logRequest = function (obj) {
+log.logRequest = function (obj) {
   obj = obj || {}
   // pick req off ctx if it exists
   if (obj.ctx && obj.ctx.req && !obj.req) {
@@ -137,4 +137,22 @@ log.logReq = log.logRequest = function (obj) {
       : httpRequest
   }
   log.info('http request', obj)
+}
+
+log.onFinish = function () {
+  const unFinishedStreams = []
+  log.streams.forEach(s => {
+    if (!s.stream) return
+    if (s.stream === process.stdout) return
+    if (s.stream === process.stderr) return
+    unFinishedStreams.push(s.stream)
+  })
+  return Promise.all(unFinishedStreams.map(function (stream) {
+    return new Promise(function (resolve) {
+      if (stream.finished) return resolve()
+      stream.on('finish', function () {
+        resolve()
+      })
+    })
+  }))
 }

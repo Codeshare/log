@@ -16,3 +16,7 @@ log.trace('message', {/*...*/})
 ```js
 log.logRequest({/*...*/})
 ```
+
+```js
+await log.onFinish()
+```

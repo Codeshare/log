@@ -58,6 +58,8 @@ log.on('error', function (err) {
   console.error(new AppError(500, 'LOG ERROR!', err))
 })
 
+let logEnded = false
+
 const names = [
   'fatal',
   'error',
@@ -69,6 +71,7 @@ const names = [
 names.forEach(function (name) {
   shimmer.wrap(log, name, function (orig) {
     return function (obj, msg) {
+      if (logEnded) console.log('STREAM ENDED BEFORE:', msg)
       // allows for args in any order..
       let tmp
       if (msg && typeof msg === 'object') {
@@ -139,7 +142,14 @@ log.logRequest = function (obj) {
   log.info('http request', obj)
 }
 
-log.onFinish = function () {
+let keepAliveTimer = null
+function keepAlive (check) {
+  keepAliveTimer = setTimeout(function () {
+    if (!check()) keepAlive(check)
+  }, 1000)
+}
+
+log.end = function () {
   const unFinishedStreams = []
   log.streams.forEach(s => {
     if (!s.stream) return
@@ -150,9 +160,15 @@ log.onFinish = function () {
   return Promise.all(unFinishedStreams.map(function (stream) {
     return new Promise(function (resolve) {
       if (stream.finished) return resolve()
+      keepAlive(function () {
+        return stream.finished
+      })
       stream.on('finish', function () {
+        clearTimeout(keepAliveTimer)
         resolve()
       })
+      logEnded = true
+      stream.end()
     })
   }))
 }

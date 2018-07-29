@@ -40,12 +40,18 @@ const log = module.exports = bunyan.createLogger({
     ? [
       new LoggingBunyan({
         logName: process.env.APP_NAME
-      }).stream()
+      }).stream(),
+      {
+        level: 'fatal',
+        stream: process.stdout
+      }
     ]
     // log to stdout
-    : [{
-      stream: process.stdout
-    }]
+    : [
+      {
+        stream: process.stdout
+      }
+    ]
 })
 
 log.on('error', function (err) {

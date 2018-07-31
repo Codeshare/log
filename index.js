@@ -39,7 +39,11 @@ const log = module.exports = bunyan.createLogger({
     // log to google-cloud
     ? [
       new LoggingBunyan({
-        logName: process.env.APP_NAME
+        logName: process.env.APP_NAME,
+        serviceContext: {
+          service: process.env.APP_NAME,
+          version: process.env.APP_VERSION
+        }
       }).stream(),
       {
         level: 'fatal',

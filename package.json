@@ -1,6 +1,6 @@
 {
   "name": "@codeshare/log",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "codeshare logger",
   "main": "index.js",
   "scripts": {

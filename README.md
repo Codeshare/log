@@ -1,4 +1,7 @@
 # log
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/Codeshare/log.svg)](https://greenkeeper.io/)
+
 Codeshare Application Logger
 
 # Usage

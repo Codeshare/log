@@ -19,7 +19,7 @@
   "dependencies": {
     "101": "^1.6.3",
     "@codeshare/env": "github:codeshare/env#v1.0.1",
-    "@google-cloud/logging-bunyan": "^0.9.4",
+    "@google-cloud/logging-bunyan": "^0.9.5",
     "assert-env": "^0.6.0",
     "bunyan": "^1.8.12",
     "codeshare-error": "github:codeshare/error",

@@ -78,12 +78,13 @@ names.forEach(function (name) {
       if (logEnded) console.log('STREAM ENDED BEFORE:', msg)
       // allows for args in any order..
       let tmp
-      if (msg && typeof msg === 'object') {
+      if (obj && typeof obj === 'string') {
         // args are reversed.. swap them
         tmp = msg
         msg = obj
         obj = tmp
       }
+      obj = obj || {}
       // default log values
       Object.assign(obj, {
         env: process.env.NODE_ENV,

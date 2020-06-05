@@ -3,7 +3,7 @@
 require('@codeshare/env').assert([
   'APP_LOG_LEVEL',
   'APP_NAME',
-  'ENABLE_GCLOUD_LOG'
+  'ENABLE_GCLOUD_LOG',
 ])
 
 const AppError = require('codeshare-error')
@@ -25,7 +25,7 @@ const LOG_LEVEL = process.env.APP_LOG_LEVEL || 'fatal'
 // hardcode for now..
 const TRACE_CONTEXT_HEADER_NAME = 'x-cloud-trace-context'
 
-const log = module.exports = bunyan.createLogger({
+const log = (module.exports = bunyan.createLogger({
   name: process.env.APP_NAME,
   level: LOG_LEVEL,
   serializers: {
@@ -33,30 +33,30 @@ const log = module.exports = bunyan.createLogger({
     err: errToJSON,
     req: reqToJSON,
     proxyReq: reqToJSON,
-    spark: sparkToJSON
+    spark: sparkToJSON,
   },
   streams: process.env.ENABLE_GCLOUD_LOG
-    // log to google-cloud
-    ? [
-      new LoggingBunyan({
-        logName: process.env.APP_NAME,
-        serviceContext: {
-          service: process.env.APP_NAME,
-          version: process.env.APP_VERSION
-        }
-      }).stream(),
-      {
-        level: 'fatal',
-        stream: process.stdout
-      }
-    ]
-    // log to stdout
-    : [
-      {
-        stream: process.stdout
-      }
-    ]
-})
+    ? // log to google-cloud
+      [
+        new LoggingBunyan({
+          logName: process.env.APP_NAME,
+          serviceContext: {
+            service: process.env.APP_NAME,
+            version: process.env.APP_VERSION,
+          },
+        }).stream(),
+        {
+          level: 'fatal',
+          stream: process.stdout,
+        },
+      ]
+    : // log to stdout
+      [
+        {
+          stream: process.stdout,
+        },
+      ],
+}))
 
 log.on('error', function (err) {
   console.error(new AppError(500, 'LOG ERROR!', err))
@@ -64,14 +64,7 @@ log.on('error', function (err) {
 
 let logEnded = false
 
-const names = [
-  'fatal',
-  'error',
-  'warn',
-  'info',
-  'debug',
-  'trace'
-]
+const names = ['fatal', 'error', 'warn', 'info', 'debug', 'trace']
 names.forEach(function (name) {
   shimmer.wrap(log, name, function (orig) {
     return function (obj, msg) {
@@ -89,14 +82,15 @@ names.forEach(function (name) {
       Object.assign(obj, {
         env: process.env.NODE_ENV,
         commit: process.env.APP_GIT_COMMIT,
-        version: process.env.APP_VERSION
+        version: process.env.APP_VERSION,
       })
       // pick req off ctx if it exists
       if (obj.ctx && obj.ctx.req && !obj.req) {
         obj.req = obj.ctx.req
       }
       // pick trace key off of header
-      const traceKey = obj.req && obj.req.headers && obj.req.headers[TRACE_CONTEXT_HEADER_NAME]
+      const traceKey =
+        obj.req && obj.req.headers && obj.req.headers[TRACE_CONTEXT_HEADER_NAME]
       if (traceKey) {
         obj[LoggingBunyan.LOGGING_TRACE_KEY] = traceKey
       }
@@ -138,7 +132,7 @@ log.logRequest = function (obj) {
       // cacheHit: bool,
       // cacheValidatedWithOriginServer: bool,
       // cacheFillBytes: int64,
-      protocol: 'HTTP/1.1'
+      protocol: 'HTTP/1.1',
     }
     obj.httpRequest = obj.httpRequest
       ? Object.assign(httpRequest, obj.httpRequest)
@@ -148,7 +142,7 @@ log.logRequest = function (obj) {
 }
 
 let keepAliveTimer = null
-function keepAlive (check) {
+function keepAlive(check) {
   keepAliveTimer = setTimeout(function () {
     if (!check()) keepAlive(check)
   }, 1000)
@@ -156,24 +150,26 @@ function keepAlive (check) {
 
 log.end = function () {
   const unFinishedStreams = []
-  log.streams.forEach(s => {
+  log.streams.forEach((s) => {
     if (!s.stream) return
     if (s.stream === process.stdout) return
     if (s.stream === process.stderr) return
     unFinishedStreams.push(s.stream)
   })
-  return Promise.all(unFinishedStreams.map(function (stream) {
-    return new Promise(function (resolve) {
-      if (stream.finished) return resolve()
-      keepAlive(function () {
-        return stream.finished
+  return Promise.all(
+    unFinishedStreams.map(function (stream) {
+      return new Promise(function (resolve) {
+        if (stream.finished) return resolve()
+        keepAlive(function () {
+          return stream.finished
+        })
+        stream.on('finish', function () {
+          clearTimeout(keepAliveTimer)
+          resolve()
+        })
+        logEnded = true
+        stream.end()
       })
-      stream.on('finish', function () {
-        clearTimeout(keepAliveTimer)
-        resolve()
-      })
-      logEnded = true
-      stream.end()
-    })
-  }))
+    }),
+  )
 }

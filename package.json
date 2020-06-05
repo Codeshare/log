@@ -19,18 +19,16 @@
   "dependencies": {
     "101": "^1.6.3",
     "@codeshare/env": "github:codeshare/env#v1.0.1",
-    "@google-cloud/logging-bunyan": "^2.0.3",
-    "assert-env": "^0.6.0",
+    "@google-cloud/logging-bunyan": "^3.0.0",
     "bunyan": "^1.8.12",
-    "codeshare-error": "github:codeshare/error",
+    "codeshare-error": "github:codeshare/error#1.2.1",
     "error-to-json": "^1.1.0",
     "request-to-json": "^1.1.1",
     "shimmer": "^1.2.0",
-    "spark-to-json": "^1.0.2",
-    "through2": "^2.0.1",
-    "to-array": "^0.1.4"
+    "spark-to-json": "^1.0.2"
   },
   "devDependencies": {
+    "prettier": "^2.0.5",
     "standard": "^11.0.1"
   }
 }

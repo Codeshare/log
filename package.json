@@ -2,9 +2,11 @@
   "name": "@codeshare/log",
   "version": "3.0.0",
   "description": "codeshare logger",
-  "main": "index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -17,18 +19,24 @@
   },
   "homepage": "https://github.com/Codeshare/log",
   "dependencies": {
-    "101": "^1.6.3",
-    "@codeshare/env": "github:codeshare/env#v1.0.1",
+    "@codeshare/env": "github:codeshare/env#v2.0.1",
     "@google-cloud/logging-bunyan": "^3.0.0",
+    "baseerr": "^1.0.0",
     "bunyan": "^1.8.12",
-    "codeshare-error": "github:codeshare/error#1.2.1",
-    "error-to-json": "^1.1.0",
-    "request-to-json": "^1.1.1",
-    "shimmer": "^1.2.0",
-    "spark-to-json": "^1.0.2"
+    "error-to-json": "^2.0.0",
+    "request-to-json": "^2.0.2",
+    "spark-to-json": "^2.0.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-typescript": "^7.10.1",
+    "@types/bunyan": "^1.8.6",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^14.0.13",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^26.0.1",
+    "jest": "^26.0.1",
     "prettier": "^2.0.5",
-    "standard": "^11.0.1"
+    "typescript": "^3.9.3"
   }
 }

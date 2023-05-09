@@ -39,11 +39,11 @@ class Logger extends Bunyan {
       name: get('APP_NAME').required().asString(),
       level,
       serializers: {
-        ctx: ctxToJSON,
-        err: errToJSON,
-        req: reqToJSON,
-        proxyReq: reqToJSON,
-        spark: sparkToJSON,
+        ctx: wrapNullishGuard(ctxToJSON),
+        err: wrapNullishGuard(errToJSON),
+        req: wrapNullishGuard(reqToJSON),
+        proxyReq: wrapNullishGuard(reqToJSON),
+        spark: wrapNullishGuard(sparkToJSON),
       },
       streams: get('ENABLE_GCLOUD_LOG').asBool()
         ? // log to google-cloud
@@ -114,7 +114,7 @@ class Logger extends Bunyan {
     })
     await Promise.all(
       unFinishedStreams.map(function (stream) {
-        return new Promise(function (resolve) {
+        return new Promise<void>(function (resolve) {
           if (stream.writableFinished) return resolve()
           keepAlive(function () {
             return stream.writableFinished
@@ -152,4 +152,11 @@ function ctxToJSON({ token, me, session }: Ctx) {
     }
   }
   return json
+}
+
+function wrapNullishGuard<V, R>(fn: (v: V) => R) {
+  return function (v: V | undefined | null): R | undefined | null {
+    if (v == null) return v as null
+    return fn(v)
+  }
 }

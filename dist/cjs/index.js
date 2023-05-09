@@ -46,11 +46,11 @@ class Logger extends bunyan_1.default {
             name: env_1.get('APP_NAME').required().asString(),
             level,
             serializers: {
-                ctx: ctxToJSON,
-                err: error_to_json_1.default,
-                req: request_to_json_1.default,
-                proxyReq: request_to_json_1.default,
-                spark: spark_to_json_1.default,
+                ctx: wrapNullishGuard(ctxToJSON),
+                err: wrapNullishGuard(error_to_json_1.default),
+                req: wrapNullishGuard(request_to_json_1.default),
+                proxyReq: wrapNullishGuard(request_to_json_1.default),
+                spark: wrapNullishGuard(spark_to_json_1.default),
             },
             streams: env_1.get('ENABLE_GCLOUD_LOG').asBool()
                 ? // log to google-cloud
@@ -157,5 +157,12 @@ function ctxToJSON({ token, me, session }) {
         };
     }
     return json;
+}
+function wrapNullishGuard(fn) {
+    return function (v) {
+        if (v == null)
+            return v;
+        return fn(v);
+    };
 }
 //# sourceMappingURL=index.js.map

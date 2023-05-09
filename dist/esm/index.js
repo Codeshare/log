@@ -41,11 +41,11 @@ class Logger extends Bunyan {
             name: get('APP_NAME').required().asString(),
             level,
             serializers: {
-                ctx: ctxToJSON,
-                err: errToJSON,
-                req: reqToJSON,
-                proxyReq: reqToJSON,
-                spark: sparkToJSON,
+                ctx: wrapNullishGuard(ctxToJSON),
+                err: wrapNullishGuard(errToJSON),
+                req: wrapNullishGuard(reqToJSON),
+                proxyReq: wrapNullishGuard(reqToJSON),
+                spark: wrapNullishGuard(sparkToJSON),
             },
             streams: get('ENABLE_GCLOUD_LOG').asBool()
                 ? // log to google-cloud
@@ -152,5 +152,12 @@ function ctxToJSON({ token, me, session }) {
         };
     }
     return json;
+}
+function wrapNullishGuard(fn) {
+    return function (v) {
+        if (v == null)
+            return v;
+        return fn(v);
+    };
 }
 //# sourceMappingURL=index.js.map

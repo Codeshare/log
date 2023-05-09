@@ -41,6 +41,10 @@ class Logger extends Bunyan {
       serializers: {
         ctx: wrapNullishGuard(ctxToJSON),
         err: wrapNullishGuard(errToJSON),
+        apiErr: wrapNullishGuard(errToJSON),
+        graphqlErr: wrapNullishGuard(errToJSON),
+        sourceErr: wrapNullishGuard(errToJSON),
+        originalErr: wrapNullishGuard(errToJSON),
         req: wrapNullishGuard(reqToJSON),
         proxyReq: wrapNullishGuard(reqToJSON),
         spark: wrapNullishGuard(sparkToJSON),

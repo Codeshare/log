@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/Codeshare/log",
   "dependencies": {
-    "@codeshare/env": "git+ssh://github.com/codeshare/env#v2.1.1",
+    "@codeshare/env": "git+https://oauth2:${GITHUB_TOKEN}@github.com/codeshare/env.git#v2.1.1",
     "@google-cloud/logging-bunyan": "^4.1.0",
     "baseerr": "^1.0.1",
     "bunyan": "^1.8.15",

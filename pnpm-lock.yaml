@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@codeshare/env':
-        specifier: ^2.2.2
-        version: 2.2.3
+        specifier: ^2.3.3
+        version: 2.3.3
       '@google-cloud/logging-bunyan':
         specifier: ^4.1.0
         version: 4.2.2(bunyan@1.8.15)
@@ -660,8 +660,8 @@ packages:
     engines: {node: '>=0.1.95'}
     hasBin: true
 
-  '@codeshare/env@2.2.3':
-    resolution: {integrity: sha512-NGnxs7o69TPrP0xv3GH/Ffjzz8QvSiTXV6jqoltoq4AYMbOMVXuB/F8UXecPxzNoLmyChanm6VD1TzlsNrdYMA==, tarball: https://npm.pkg.github.com/download/@codeshare/env/2.2.3/3f43cab4397ebf425547b19dbcf94fe216fa2a61}
+  '@codeshare/env@2.3.3':
+    resolution: {integrity: sha512-x06mOxrXIqefvOKS9qFZ99gGvz/oz/up3nPeR+/wJl1Inct5LS2rkt4WyeSSadOGotyYeETrwvb9FceBA0sPLQ==, tarball: https://npm.pkg.github.com/download/@codeshare/env/2.3.3/9ad2c7b5ca9410ce31112698482c6c1010236023}
 
   '@google-cloud/common@4.0.3':
     resolution: {integrity: sha512-fUoMo5b8iAKbrYpneIRV3z95AlxVJPrjpevxs4SKoclngWZvTXBSGpNisF5+x5m+oNGve7jfB1e6vNBZBUs7Fw==}
@@ -3830,7 +3830,7 @@ snapshots:
       exec-sh: 0.3.6
       minimist: 1.2.8
 
-  '@codeshare/env@2.2.3':
+  '@codeshare/env@2.3.3':
     dependencies:
       baseerr: 1.0.4
       dotenv: 16.4.7

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -37,22 +28,26 @@ var levels;
     levels["debug"] = "debug";
     levels["trace"] = "trace";
 })(levels || (levels = {}));
-const level = env_1.get('APP_LOG_LEVEL')
+const level = (0, env_1.get)('APP_LOG_LEVEL')
     .default('fatal')
     .asEnum(Object.values(levels));
 class Logger extends bunyan_1.default {
     constructor() {
         super({
-            name: env_1.get('APP_NAME').required().asString(),
+            name: (0, env_1.get)('APP_NAME').required().asString(),
             level,
             serializers: {
                 ctx: wrapNullishGuard(ctxToJSON),
                 err: wrapNullishGuard(error_to_json_1.default),
+                apiErr: wrapNullishGuard(error_to_json_1.default),
+                graphqlErr: wrapNullishGuard(error_to_json_1.default),
+                sourceErr: wrapNullishGuard(error_to_json_1.default),
+                originalErr: wrapNullishGuard(error_to_json_1.default),
                 req: wrapNullishGuard(request_to_json_1.default),
                 proxyReq: wrapNullishGuard(request_to_json_1.default),
                 spark: wrapNullishGuard(spark_to_json_1.default),
             },
-            streams: env_1.get('ENABLE_GCLOUD_LOG').asBool()
+            streams: (0, env_1.get)('ENABLE_GCLOUD_LOG').asBool()
                 ? // log to google-cloud
                     [
                         new logging_bunyan_1.LoggingBunyan({
@@ -113,35 +108,33 @@ class Logger extends bunyan_1.default {
             console.log('STREAM ENDED BEFORE: trace:', msg, data);
         super.trace(data || {}, msg);
     }
-    end() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.logEnded = true;
-            const unFinishedStreams = [];
-            this.streams.forEach((s) => {
-                if (!s.stream)
-                    return;
-                if (s.stream === process.stdout)
-                    return;
-                if (s.stream === process.stderr)
-                    return;
-                unFinishedStreams.push(s.stream);
-            });
-            yield Promise.all(unFinishedStreams.map(function (stream) {
-                return new Promise(function (resolve) {
-                    if (stream.writableFinished)
-                        return resolve();
-                    keepAlive(function () {
-                        return stream.writableFinished;
-                    });
-                    stream.on('finish', function () {
-                        if (keepAliveTimer != null)
-                            clearTimeout(keepAliveTimer);
-                        resolve();
-                    });
-                    stream.end();
-                });
-            }));
+    async end() {
+        this.logEnded = true;
+        const unFinishedStreams = [];
+        this.streams.forEach((s) => {
+            if (!s.stream)
+                return;
+            if (s.stream === process.stdout)
+                return;
+            if (s.stream === process.stderr)
+                return;
+            unFinishedStreams.push(s.stream);
         });
+        await Promise.all(unFinishedStreams.map(function (stream) {
+            return new Promise(function (resolve) {
+                if (stream.writableFinished)
+                    return resolve();
+                keepAlive(function () {
+                    return stream.writableFinished;
+                });
+                stream.on('finish', function () {
+                    if (keepAliveTimer != null)
+                        clearTimeout(keepAliveTimer);
+                    resolve();
+                });
+                stream.end();
+            });
+        }));
     }
 }
 exports.default = new Logger();

@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import BaseError from 'baseerr';
 import Bunyan from 'bunyan';
 import { LoggingBunyan } from '@google-cloud/logging-bunyan';
@@ -43,6 +34,10 @@ class Logger extends Bunyan {
             serializers: {
                 ctx: wrapNullishGuard(ctxToJSON),
                 err: wrapNullishGuard(errToJSON),
+                apiErr: wrapNullishGuard(errToJSON),
+                graphqlErr: wrapNullishGuard(errToJSON),
+                sourceErr: wrapNullishGuard(errToJSON),
+                originalErr: wrapNullishGuard(errToJSON),
                 req: wrapNullishGuard(reqToJSON),
                 proxyReq: wrapNullishGuard(reqToJSON),
                 spark: wrapNullishGuard(sparkToJSON),
@@ -108,35 +103,33 @@ class Logger extends Bunyan {
             console.log('STREAM ENDED BEFORE: trace:', msg, data);
         super.trace(data || {}, msg);
     }
-    end() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.logEnded = true;
-            const unFinishedStreams = [];
-            this.streams.forEach((s) => {
-                if (!s.stream)
-                    return;
-                if (s.stream === process.stdout)
-                    return;
-                if (s.stream === process.stderr)
-                    return;
-                unFinishedStreams.push(s.stream);
-            });
-            yield Promise.all(unFinishedStreams.map(function (stream) {
-                return new Promise(function (resolve) {
-                    if (stream.writableFinished)
-                        return resolve();
-                    keepAlive(function () {
-                        return stream.writableFinished;
-                    });
-                    stream.on('finish', function () {
-                        if (keepAliveTimer != null)
-                            clearTimeout(keepAliveTimer);
-                        resolve();
-                    });
-                    stream.end();
-                });
-            }));
+    async end() {
+        this.logEnded = true;
+        const unFinishedStreams = [];
+        this.streams.forEach((s) => {
+            if (!s.stream)
+                return;
+            if (s.stream === process.stdout)
+                return;
+            if (s.stream === process.stderr)
+                return;
+            unFinishedStreams.push(s.stream);
         });
+        await Promise.all(unFinishedStreams.map(function (stream) {
+            return new Promise(function (resolve) {
+                if (stream.writableFinished)
+                    return resolve();
+                keepAlive(function () {
+                    return stream.writableFinished;
+                });
+                stream.on('finish', function () {
+                    if (keepAliveTimer != null)
+                        clearTimeout(keepAliveTimer);
+                    resolve();
+                });
+                stream.end();
+            });
+        }));
     }
 }
 export default new Logger();

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import Bunyan from 'bunyan';
 import { Writable } from 'stream';
 declare class Logger extends Bunyan {

@@ -1,6 +1,6 @@
 {
   "name": "@codeshare/log",
-  "version": "4.4.2",
+  "version": "5.0.0",
   "description": "codeshare logger",
   "main": "dist/cjs/index.cjs",
   "module": "dist/esm/index.mjs",

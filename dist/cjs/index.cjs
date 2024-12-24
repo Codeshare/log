@@ -7,7 +7,7 @@ const baseerr_1 = __importDefault(require("baseerr"));
 const bunyan_1 = __importDefault(require("bunyan"));
 const logging_bunyan_1 = require("@google-cloud/logging-bunyan");
 const error_to_json_1 = __importDefault(require("error-to-json"));
-const env_1 = require("@codeshare/env");
+const env_var_1 = require("env-var");
 const request_to_json_1 = __importDefault(require("request-to-json"));
 const spark_to_json_1 = __importDefault(require("spark-to-json"));
 let keepAliveTimer;
@@ -28,13 +28,13 @@ var levels;
     levels["debug"] = "debug";
     levels["trace"] = "trace";
 })(levels || (levels = {}));
-const level = (0, env_1.get)('APP_LOG_LEVEL')
+const level = (0, env_var_1.get)('APP_LOG_LEVEL')
     .default('fatal')
     .asEnum(Object.values(levels));
 class Logger extends bunyan_1.default {
     constructor() {
         super({
-            name: (0, env_1.get)('APP_NAME').required().asString(),
+            name: (0, env_var_1.get)('APP_NAME').required().asString(),
             level,
             serializers: {
                 ctx: wrapNullishGuard(ctxToJSON),
@@ -47,7 +47,7 @@ class Logger extends bunyan_1.default {
                 proxyReq: wrapNullishGuard(request_to_json_1.default),
                 spark: wrapNullishGuard(spark_to_json_1.default),
             },
-            streams: (0, env_1.get)('ENABLE_GCLOUD_LOG').asBool()
+            streams: (0, env_var_1.get)('ENABLE_GCLOUD_LOG').asBool()
                 ? // log to google-cloud
                     [
                         new logging_bunyan_1.LoggingBunyan({

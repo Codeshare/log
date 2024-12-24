@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@codeshare/env':
-        specifier: ^2.3.3
-        version: 2.3.3
       '@google-cloud/logging-bunyan':
         specifier: ^4.1.0
         version: 4.2.2(bunyan@1.8.15)
@@ -667,9 +664,6 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@codeshare/env@2.3.3':
-    resolution: {integrity: sha512-x06mOxrXIqefvOKS9qFZ99gGvz/oz/up3nPeR+/wJl1Inct5LS2rkt4WyeSSadOGotyYeETrwvb9FceBA0sPLQ==, tarball: https://npm.pkg.github.com/download/@codeshare/env/2.3.3/9ad2c7b5ca9410ce31112698482c6c1010236023}
-
   '@google-cloud/common@4.0.3':
     resolution: {integrity: sha512-fUoMo5b8iAKbrYpneIRV3z95AlxVJPrjpevxs4SKoclngWZvTXBSGpNisF5+x5m+oNGve7jfB1e6vNBZBUs7Fw==}
     engines: {node: '>=12.0.0'}
@@ -1232,10 +1226,6 @@ packages:
     resolution: {integrity: sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA==}
     engines: {node: '>=10'}
 
-  dotenv@16.4.7:
-    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
-    engines: {node: '>=12'}
-
   dtrace-provider@0.8.8:
     resolution: {integrity: sha512-b7Z7cNtHPhH9EJhNNbbeqTcXB8LGFFZhq1PGgEvpeHlzd36bhbdTWoE/Ba/YguqpBSlAPKnARWhVlhunCMwfxg==}
     engines: {node: '>=0.10'}
@@ -1278,10 +1268,6 @@ packages:
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
-
-  env-var@6.3.0:
-    resolution: {integrity: sha512-gaNzDZuVaJQJlP2SigAZLu/FieZN5MzdN7lgHNehESwlRanHwGQ/WUtJ7q//dhrj3aGBZM45yEaKOuvSJaf4mA==}
-    engines: {node: '>=8'}
 
   env-var@7.5.0:
     resolution: {integrity: sha512-mKZOzLRN0ETzau2W2QXefbFjo5EF4yWq28OyKb9ICdeNhHJlOE/pHHnz4hdYJ9cNZXcJHo5xN4OT4pzuSHSNvA==}
@@ -1442,10 +1428,6 @@ packages:
   get-stream@6.0.1:
     resolution: {integrity: sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==}
     engines: {node: '>=10'}
-
-  git-repo-info@2.1.1:
-    resolution: {integrity: sha512-8aCohiDo4jwjOwma4FmYFd3i97urZulL8XL24nIPxuE+GZnfsAyy/g2Shqx6OjUiFKUXZM+Yy+KHnOmmA3FVcg==}
-    engines: {node: '>= 4.0'}
 
   glob@6.0.4:
     resolution: {integrity: sha512-MKZeRNyYZAVVVG1oZeLaWie1uweH40m9AZwIwxyPbTSX4hHrVYSzLg0Ro5Z5R7XKkIX+Cc6oD1rqeDJnwsB8/A==}
@@ -2027,9 +2009,6 @@ packages:
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
-
-  parse-duration@0.4.4:
-    resolution: {integrity: sha512-KbAJuYGUhZkB9gotDiKLnZ7Z3VTacK3fgwmDdB6ZVDtJbMBT6MfLga0WJaYpPDu0mzqT0NgHtHDt5PY4l0nidg==}
 
   parse-json@5.2.0:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
@@ -3255,14 +3234,6 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@codeshare/env@2.3.3':
-    dependencies:
-      baseerr: 1.0.4
-      dotenv: 16.4.7
-      env-var: 6.3.0
-      git-repo-info: 2.1.1
-      parse-duration: 0.4.4
-
   '@google-cloud/common@4.0.3':
     dependencies:
       '@google-cloud/projectify': 3.0.0
@@ -4039,8 +4010,6 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  dotenv@16.4.7: {}
-
   dtrace-provider@0.8.8:
     dependencies:
       nan: 2.22.0
@@ -4087,8 +4056,6 @@ snapshots:
       safe-regex-test: 1.1.0
 
   entities@4.5.0: {}
-
-  env-var@6.3.0: {}
 
   env-var@7.5.0: {}
 
@@ -4258,8 +4225,6 @@ snapshots:
   get-package-type@0.1.0: {}
 
   get-stream@6.0.1: {}
-
-  git-repo-info@2.1.1: {}
 
   glob@6.0.4:
     dependencies:
@@ -5052,8 +5017,6 @@ snapshots:
       p-limit: 2.3.0
 
   p-try@2.2.0: {}
-
-  parse-duration@0.4.4: {}
 
   parse-json@5.2.0:
     dependencies:

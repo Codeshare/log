@@ -2,7 +2,7 @@ import BaseError from 'baseerr';
 import Bunyan from 'bunyan';
 import { LoggingBunyan } from '@google-cloud/logging-bunyan';
 import errToJSON from 'error-to-json';
-import { get } from '@codeshare/env';
+import { get } from 'env-var';
 import reqToJSON from 'request-to-json';
 import sparkToJSON from 'spark-to-json';
 let keepAliveTimer;

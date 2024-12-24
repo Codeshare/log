@@ -20,6 +20,9 @@ importers:
       bunyan:
         specifier: ^1.8.15
         version: 1.8.15
+      env-var:
+        specifier: ^7.5.0
+        version: 7.5.0
       error-to-json:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1279,6 +1282,10 @@ packages:
   env-var@6.3.0:
     resolution: {integrity: sha512-gaNzDZuVaJQJlP2SigAZLu/FieZN5MzdN7lgHNehESwlRanHwGQ/WUtJ7q//dhrj3aGBZM45yEaKOuvSJaf4mA==}
     engines: {node: '>=8'}
+
+  env-var@7.5.0:
+    resolution: {integrity: sha512-mKZOzLRN0ETzau2W2QXefbFjo5EF4yWq28OyKb9ICdeNhHJlOE/pHHnz4hdYJ9cNZXcJHo5xN4OT4pzuSHSNvA==}
+    engines: {node: '>=10'}
 
   error-ex@1.3.2:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
@@ -4082,6 +4089,8 @@ snapshots:
   entities@4.5.0: {}
 
   env-var@6.3.0: {}
+
+  env-var@7.5.0: {}
 
   error-ex@1.3.2:
     dependencies:

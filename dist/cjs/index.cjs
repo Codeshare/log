@@ -28,14 +28,17 @@ var levels;
     levels["debug"] = "debug";
     levels["trace"] = "trace";
 })(levels || (levels = {}));
-const level = (0, env_var_1.get)('APP_LOG_LEVEL')
+const APP_NAME = (0, env_var_1.get)('APP_NAME').required().asString();
+const APP_VERSION = (0, env_var_1.get)('APP_VERSION').default('unknown').asString();
+const APP_LOG_LEVEL = (0, env_var_1.get)('APP_LOG_LEVEL')
     .default('fatal')
     .asEnum(Object.values(levels));
+const ENABLE_GCLOUD_LOG = (0, env_var_1.get)('ENABLE_GCLOUD_LOG').default('false').asBool();
 class Logger extends bunyan_1.default {
     constructor() {
         super({
-            name: (0, env_var_1.get)('APP_NAME').required().asString(),
-            level,
+            name: APP_NAME,
+            level: APP_LOG_LEVEL,
             serializers: {
                 ctx: wrapNullishGuard(ctxToJSON),
                 err: wrapNullishGuard(error_to_json_1.default),
@@ -47,16 +50,16 @@ class Logger extends bunyan_1.default {
                 proxyReq: wrapNullishGuard(request_to_json_1.default),
                 spark: wrapNullishGuard(spark_to_json_1.default),
             },
-            streams: (0, env_var_1.get)('ENABLE_GCLOUD_LOG').asBool()
+            streams: ENABLE_GCLOUD_LOG
                 ? // log to google-cloud
                     [
                         new logging_bunyan_1.LoggingBunyan({
-                            logName: process.env.APP_NAME,
+                            logName: APP_NAME,
                             serviceContext: {
-                                service: process.env.APP_NAME,
-                                version: process.env.APP_VERSION,
+                                service: APP_NAME,
+                                version: APP_VERSION,
                             },
-                        }).stream(level),
+                        }).stream(APP_LOG_LEVEL),
                         {
                             level: 'fatal',
                             stream: process.stdout,
@@ -76,36 +79,42 @@ class Logger extends bunyan_1.default {
     fatal(msg, data) {
         if (this.logEnded)
             console.log('STREAM ENDED BEFORE: fatal:', msg, data);
+        gcloudErrorDataTransform(data);
         super.fatal(data || {}, msg);
     }
     // @ts-ignore
     error(msg, data) {
         if (this.logEnded)
             console.log('STREAM ENDED BEFORE: error:', msg, data);
+        gcloudErrorDataTransform(data);
         super.error(data || {}, msg);
     }
     // @ts-ignore
     warn(msg, data) {
         if (this.logEnded)
             console.log('STREAM ENDED BEFORE: warn:', msg, data);
+        gcloudErrorDataTransform(data);
         super.warn(data || {}, msg);
     }
     // @ts-ignore
     info(msg, data) {
         if (this.logEnded)
             console.log('STREAM ENDED BEFORE: info:', msg, data);
+        gcloudErrorDataTransform(data);
         super.info(data || {}, msg);
     }
     // @ts-ignore
     debug(msg, data) {
         if (this.logEnded)
             console.log('STREAM ENDED BEFORE: debug:', msg, data);
+        gcloudErrorDataTransform(data);
         super.debug(data || {}, msg);
     }
     // @ts-ignore
     trace(msg, data) {
         if (this.logEnded)
             console.log('STREAM ENDED BEFORE: trace:', msg, data);
+        gcloudErrorDataTransform(data);
         super.trace(data || {}, msg);
     }
     async end() {
@@ -138,6 +147,17 @@ class Logger extends bunyan_1.default {
     }
 }
 exports.default = new Logger();
+function gcloudErrorDataTransform(data) {
+    var _a;
+    if (ENABLE_GCLOUD_LOG) {
+        // modify error properties to prevent redundancy
+        if ((_a = data === null || data === void 0 ? void 0 : data.err) === null || _a === void 0 ? void 0 : _a.stack) {
+            data.message = data.err.stack;
+            data.err.stack = undefined;
+            delete data.err.stack;
+        }
+    }
+}
 function ctxToJSON({ token, me, session }) {
     const json = {
         token,

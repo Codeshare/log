@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/Codeshare/log",
   "dependencies": {
-    "@google-cloud/logging-bunyan": "^4.1.0",
+    "@google-cloud/logging-bunyan": "^5.1.0",
     "baseerr": "^1.0.1",
     "bunyan": "^1.8.15",
     "env-var": "^7.5.0",

@@ -159,8 +159,21 @@ function gcloudErrorDataTransform(data: LogData) {
     // modify error properties to prevent redundancy
     if (data?.err?.stack) {
       data.message = data.err.stack
-      data.err.stack = undefined
-      delete data.err.stack
+      try {
+        Object.defineProperty(data.err, 'stack', {
+          value: undefined,
+          configurable: true,
+          writable: true,
+        })
+      } catch (_err) {
+        // If we can't modify the stack property, just leave it as is
+        try {
+          data.err = errToJSON(data.err as Error)
+          data.err.stack = undefined
+        } catch (_err) {
+          // If we can't convert the error to JSON, just leave it as is
+        }
+      }
     }
   }
 }

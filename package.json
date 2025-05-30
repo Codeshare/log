@@ -29,10 +29,10 @@
   },
   "homepage": "https://github.com/Codeshare/log",
   "dependencies": {
+    "@codeshare/env": "github:codeshare/env#v2.3.3",
     "@google-cloud/logging-bunyan": "^5.1.0",
     "baseerr": "^1.0.1",
     "bunyan": "^1.8.15",
-    "env-var": "^7.5.0",
     "error-to-json": "^2.0.1",
     "request-to-json": "^2.0.2",
     "spark-to-json": "^2.0.0"

@@ -3,7 +3,7 @@ import Bunyan from 'bunyan'
 import { LoggingBunyan } from '@google-cloud/logging-bunyan'
 import { Writable } from 'stream'
 import errToJSON from 'error-to-json'
-import { get } from 'env-var'
+import { get } from '@codeshare/env'
 import reqToJSON from 'request-to-json'
 import sparkToJSON from 'spark-to-json'
 

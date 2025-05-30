@@ -152,7 +152,13 @@ class Logger extends Bunyan {
   }
 }
 
-export default new Logger()
+const logger = new Logger()
+
+export default logger
+
+export function log(msg: string, data?: LogData) {
+  logger.info(msg, data)
+}
 
 function gcloudErrorDataTransform(data: LogData) {
   if (ENABLE_GCLOUD_LOG) {
@@ -161,7 +167,7 @@ function gcloudErrorDataTransform(data: LogData) {
       data.message = data.err.stack
       try {
         Object.defineProperty(data.err, 'stack', {
-          value: undefined,
+          value: '',
           configurable: true,
           writable: true,
         })
@@ -169,7 +175,7 @@ function gcloudErrorDataTransform(data: LogData) {
         // If we can't modify the stack property, just leave it as is
         try {
           data.err = errToJSON(data.err as Error)
-          data.err.stack = undefined
+          data.err.stack = ''
         } catch (_err) {
           // If we can't convert the error to JSON, just leave it as is
         }

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@codeshare/env':
-        specifier: github:codeshare/env#v2.3.3
-        version: git+https://git@github.com:codeshare/env.git#fd94b99713f0805d751318c708ddd9f43fed56a6
+        specifier: ^2.3.3
+        version: 2.3.3
       '@google-cloud/logging-bunyan':
         specifier: ^5.1.0
         version: 5.1.0(bunyan@1.8.15)
@@ -664,9 +664,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@codeshare/env@git+https://git@github.com:codeshare/env.git#fd94b99713f0805d751318c708ddd9f43fed56a6':
-    resolution: {commit: fd94b99713f0805d751318c708ddd9f43fed56a6, repo: git@github.com:codeshare/env.git, type: git}
-    version: 2.3.3
+  '@codeshare/env@2.3.3':
+    resolution: {integrity: sha512-x06mOxrXIqefvOKS9qFZ99gGvz/oz/up3nPeR+/wJl1Inct5LS2rkt4WyeSSadOGotyYeETrwvb9FceBA0sPLQ==, tarball: https://npm.pkg.github.com/download/@codeshare/env/2.3.3/9ad2c7b5ca9410ce31112698482c6c1010236023}
 
   '@google-cloud/common@5.0.2':
     resolution: {integrity: sha512-V7bmBKYQyu0eVG2BFejuUjlBt+zrya6vtsKdY+JxMM/dNntPF41vZ9+LhOshEUH01zOHEqBSvI7Dad7ZS6aUeA==}
@@ -3085,7 +3084,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@codeshare/env@git+https://git@github.com:codeshare/env.git#fd94b99713f0805d751318c708ddd9f43fed56a6':
+  '@codeshare/env@2.3.3':
     dependencies:
       baseerr: 1.0.4
       dotenv: 16.5.0

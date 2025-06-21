@@ -51,8 +51,8 @@ class Logger extends Bunyan {
       name: APP_NAME,
       level: APP_LOG_LEVEL,
       serializers: {
-        ctx: wrapNullishGuard(ctxToJSON),
-        // err: wrapNullishGuard(errToJSON),
+        // ctx: wrapNullishGuard(ctxToJSON),
+        err: wrapNullishGuard(errToJSON),
         apiErr: wrapNullishGuard(errToJSON),
         graphqlErr: wrapNullishGuard(errToJSON),
         sourceErr: wrapNullishGuard(errToJSON),

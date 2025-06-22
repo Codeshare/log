@@ -2,7 +2,7 @@ import BaseError from 'baseerr';
 import Bunyan from 'bunyan';
 import { LoggingBunyan } from '@google-cloud/logging-bunyan';
 import errToJSON from 'error-to-json';
-import { get } from 'env-var';
+import { get } from '@codeshare/env';
 import reqToJSON from 'request-to-json';
 import sparkToJSON from 'spark-to-json';
 let keepAliveTimer;
@@ -35,7 +35,7 @@ class Logger extends Bunyan {
             name: APP_NAME,
             level: APP_LOG_LEVEL,
             serializers: {
-                ctx: wrapNullishGuard(ctxToJSON),
+                // ctx: wrapNullishGuard(ctxToJSON),
                 err: wrapNullishGuard(errToJSON),
                 apiErr: wrapNullishGuard(errToJSON),
                 graphqlErr: wrapNullishGuard(errToJSON),
@@ -141,15 +141,34 @@ class Logger extends Bunyan {
         }));
     }
 }
-export default new Logger();
+const logger = new Logger();
+export default logger;
+export function log(msg, data) {
+    logger.info(msg, data);
+}
 function gcloudErrorDataTransform(data) {
     var _a;
     if (ENABLE_GCLOUD_LOG) {
         // modify error properties to prevent redundancy
         if ((_a = data === null || data === void 0 ? void 0 : data.err) === null || _a === void 0 ? void 0 : _a.stack) {
             data.message = data.err.stack;
-            data.err.stack = undefined;
-            delete data.err.stack;
+            try {
+                Object.defineProperty(data.err, 'stack', {
+                    value: '',
+                    configurable: true,
+                    writable: true,
+                });
+            }
+            catch (_err) {
+                // If we can't modify the stack property, just leave it as is
+                try {
+                    data.err = errToJSON(data.err);
+                    data.err.stack = '';
+                }
+                catch (_err) {
+                    // If we can't convert the error to JSON, just leave it as is
+                }
+            }
         }
     }
 }

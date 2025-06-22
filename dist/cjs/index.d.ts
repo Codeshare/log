@@ -22,5 +22,6 @@ declare class Logger extends Bunyan {
     trace(msg: string, data?: LogData): void;
     end(): Promise<void>;
 }
-declare const _default: Logger;
-export default _default;
+declare const logger: Logger;
+export default logger;
+export declare function log(msg: string, data?: LogData): void;

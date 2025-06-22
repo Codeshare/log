@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.log = log;
 const baseerr_1 = __importDefault(require("baseerr"));
 const bunyan_1 = __importDefault(require("bunyan"));
 const logging_bunyan_1 = require("@google-cloud/logging-bunyan");
 const error_to_json_1 = __importDefault(require("error-to-json"));
-const env_var_1 = require("env-var");
+const env_1 = require("@codeshare/env");
 const request_to_json_1 = __importDefault(require("request-to-json"));
 const spark_to_json_1 = __importDefault(require("spark-to-json"));
 let keepAliveTimer;
@@ -28,19 +29,19 @@ var levels;
     levels["debug"] = "debug";
     levels["trace"] = "trace";
 })(levels || (levels = {}));
-const APP_NAME = (0, env_var_1.get)('APP_NAME').required().asString();
-const APP_VERSION = (0, env_var_1.get)('APP_VERSION').default('unknown').asString();
-const APP_LOG_LEVEL = (0, env_var_1.get)('APP_LOG_LEVEL')
+const APP_NAME = (0, env_1.get)('APP_NAME').required().asString();
+const APP_VERSION = (0, env_1.get)('APP_VERSION').default('unknown').asString();
+const APP_LOG_LEVEL = (0, env_1.get)('APP_LOG_LEVEL')
     .default('fatal')
     .asEnum(Object.values(levels));
-const ENABLE_GCLOUD_LOG = (0, env_var_1.get)('ENABLE_GCLOUD_LOG').default('false').asBool();
+const ENABLE_GCLOUD_LOG = (0, env_1.get)('ENABLE_GCLOUD_LOG').default('false').asBool();
 class Logger extends bunyan_1.default {
     constructor() {
         super({
             name: APP_NAME,
             level: APP_LOG_LEVEL,
             serializers: {
-                ctx: wrapNullishGuard(ctxToJSON),
+                // ctx: wrapNullishGuard(ctxToJSON),
                 err: wrapNullishGuard(error_to_json_1.default),
                 apiErr: wrapNullishGuard(error_to_json_1.default),
                 graphqlErr: wrapNullishGuard(error_to_json_1.default),
@@ -146,15 +147,34 @@ class Logger extends bunyan_1.default {
         }));
     }
 }
-exports.default = new Logger();
+const logger = new Logger();
+exports.default = logger;
+function log(msg, data) {
+    logger.info(msg, data);
+}
 function gcloudErrorDataTransform(data) {
     var _a;
     if (ENABLE_GCLOUD_LOG) {
         // modify error properties to prevent redundancy
         if ((_a = data === null || data === void 0 ? void 0 : data.err) === null || _a === void 0 ? void 0 : _a.stack) {
             data.message = data.err.stack;
-            data.err.stack = undefined;
-            delete data.err.stack;
+            try {
+                Object.defineProperty(data.err, 'stack', {
+                    value: '',
+                    configurable: true,
+                    writable: true,
+                });
+            }
+            catch (_err) {
+                // If we can't modify the stack property, just leave it as is
+                try {
+                    data.err = (0, error_to_json_1.default)(data.err);
+                    data.err.stack = '';
+                }
+                catch (_err) {
+                    // If we can't convert the error to JSON, just leave it as is
+                }
+            }
         }
     }
 }
